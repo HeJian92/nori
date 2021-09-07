@@ -30,6 +30,14 @@ NORI_NAMESPACE_BEGIN
  */
 class Accel {
 public:
+    struct Node
+    {
+        BoundingBox3f bbox;
+        uint32_t* triangles = nullptr;
+        uint32_t triangleNum = 0;
+
+        Node** child = nullptr;
+    };
     /**
      * \brief Register a triangle mesh for inclusion in the acceleration
      * data structure
@@ -40,6 +48,8 @@ public:
 
     /// Build the acceleration data structure (currently a no-op)
     void build();
+    Node* buildRecursive(BoundingBox3f& bbox, std::vector<uint32_t>& triangles, uint32_t recursiveDepth);
+    void divideBBox(const BoundingBox3f& parent, BoundingBox3f* childBBox);
 
     /// Return an axis-aligned box that bounds the scene
     const BoundingBox3f &getBoundingBox() const { return m_bbox; }
@@ -64,10 +74,17 @@ public:
      * \return \c true if an intersection was found
      */
     bool rayIntersect(const Ray3f &ray, Intersection &its, bool shadowRay) const;
-
+    bool traversalIntersect(const Node& node, Ray3f& ray, Intersection& its, bool shadowRay, uint32_t& hit_idx) const;
 private:
     Mesh         *m_mesh = nullptr; ///< Mesh (only a single one for now)
     BoundingBox3f m_bbox;           ///< Bounding box of the entire scene
+    Node *m_root = nullptr;
+
+    // only statistics
+    uint32_t m_num_leaf_nodes = 0;
+    uint32_t m_num_nodes = 0;
+    uint32_t m_recursion_depth = 0;
+    uint32_t m_num_triangles_saved = 0;
 };
 
 NORI_NAMESPACE_END
