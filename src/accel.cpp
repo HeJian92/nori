@@ -228,6 +228,13 @@ bool Accel::rayIntersect(const Ray3f &ray_, Intersection &its, bool shadowRay) c
     return foundIntersection;
 }
 
+
+
+bool Accel::sortChildToRayDistance(const std::pair<int, float>& a, const std::pair<int, float>& b)
+{
+    return a.second < b.second;
+}
+
 bool Accel::traversalIntersect(const Node& node, Ray3f& ray, Intersection& its, bool shadowRay, uint32_t& hit_idx) const
 {
     bool foundIntersection = false;
@@ -252,9 +259,25 @@ bool Accel::traversalIntersect(const Node& node, Ray3f& ray, Intersection& its, 
     }
     if (node.child)
     {
+        //################## Improved ray traversal ################
+        //建立<childIdx, childNodeBBoxToRayDistance>
+        std::vector<std::pair<int, float>> childToRayDistances(8);
         for (int i = 0; i < 8; i++)
         {
             Node* childNode = node.child[i];
+            float distance = std::numeric_limits<float>::max();
+            if (childNode)
+            {
+                distance = childNode->bbox.distanceTo(ray.o);
+            }
+            childToRayDistances[i] = std::make_pair(i, distance);
+        }
+        sort(childToRayDistances.begin(), childToRayDistances.end(), sortChildToRayDistance);
+        //按到光线起始点距离从近到远遍历
+        for (int i = 0; i < 8; i++)
+        {
+            int childIndex = childToRayDistances[i].first;
+            Node* childNode = node.child[childIndex];
             if (childNode)
             {
                 foundIntersection = traversalIntersect(*childNode, ray, its, shadowRay, hit_idx) || foundIntersection;
@@ -262,6 +285,17 @@ bool Accel::traversalIntersect(const Node& node, Ray3f& ray, Intersection& its, 
             if (shadowRay && foundIntersection)
                 return true;
         }
+        ////################## ray traversal ################
+        //for (int i = 0; i < 8; i++)
+        //{
+        //    Node* childNode = node.child[i];
+        //    if (childNode)
+        //    {
+        //        foundIntersection = traversalIntersect(*childNode, ray, its, shadowRay, hit_idx) || foundIntersection;
+        //    }
+        //    if (shadowRay && foundIntersection)
+        //        return true;
+        //}
     }
     return foundIntersection;
 }

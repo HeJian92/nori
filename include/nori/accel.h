@@ -75,6 +75,7 @@ public:
      */
     bool rayIntersect(const Ray3f &ray, Intersection &its, bool shadowRay) const;
     bool traversalIntersect(const Node& node, Ray3f& ray, Intersection& its, bool shadowRay, uint32_t& hit_idx) const;
+    static bool sortChildToRayDistance(const std::pair<int, float>& a, const std::pair<int, float>& b); //一定要定义成static，否则传入sort中会报错
 private:
     Mesh         *m_mesh = nullptr; ///< Mesh (only a single one for now)
     BoundingBox3f m_bbox;           ///< Bounding box of the entire scene
