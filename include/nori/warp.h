@@ -67,6 +67,9 @@ public:
 
     /// Probability density of \ref squareToBeckmann()
     static float squareToBeckmannPdf(const Vector3f &m, float alpha);
+
+    static Point2f squareToConcentricDisk(const Point2f& sample);
+
 };
 
 NORI_NAMESPACE_END
