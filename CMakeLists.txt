@@ -90,6 +90,7 @@ add_executable(nori
   src/dielectric.cpp
   src/normals.cpp
   src/simple.cpp
+  src/ao.cpp
 )
 
 add_definitions(${NANOGUI_EXTRA_DEFS})
