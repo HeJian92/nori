@@ -41,8 +41,8 @@ void Accel::build()
     for (int meshIdx = 0; meshIdx < m_mesh_nums; meshIdx++)
         totalTriangleCnt += m_meshes[meshIdx]->getTriangleCount();
     
-    std::vector<uint32_t> triangleIndices(totalTriangleCnt); // 所有三角形的索引顺序存储在vector中
-    std::vector<uint32_t> meshIndices(totalTriangleCnt); // 所有三角形对应的mesh索引顺序存储在vector中
+    std::vector<uint32_t> triangleIndices(totalTriangleCnt); // 所有三角形的索引顺序存储在vector中 [5, 2, 1, 0, 3, 4,     2, 3, 1, 0,   ....]
+    std::vector<uint32_t> meshIndices(totalTriangleCnt); // 所有三角形对应的mesh索引顺序存储在vector中 [0, 0, 0, 0, 0, 0,     1, 1, 1, 1,   ....]
 
     uint32_t offset = 0;
     for (int meshIdx = 0; meshIdx < m_mesh_nums; meshIdx++)
