@@ -38,6 +38,14 @@ void Mesh::activate() {
         m_bsdf = static_cast<BSDF *>(
             NoriObjectFactory::createInstance("diffuse", PropertyList()));
     }
+
+    m_dpdf.clear();
+    for (uint32_t i = 0; i < getTriangleCount(); i++)
+    {
+        m_dpdf.append(surfaceArea(i));
+    }
+    m_dpdf.normalize();
+
 }
 
 float Mesh::surfaceArea(uint32_t index) const {
@@ -140,6 +148,34 @@ std::string Mesh::toString() const {
         m_bsdf ? indent(m_bsdf->toString()) : std::string("null"),
         m_emitter ? indent(m_emitter->toString()) : std::string("null")
     );
+}
+
+SampleResult Mesh::sample(Sampler *sampler)
+{
+    float pdf = sampler->next1D();
+    size_t idx = m_dpdf.sample(pdf);
+    uint32_t i0 = m_F(0, idx), i1 = m_F(1, idx), i2 = m_F(2, idx);
+
+    const Point3f p0 = m_V.col(i0), p1 = m_V.col(i1), p2 = m_V.col(i2); // 采样到的三角形的vertex
+
+    Point2f randomPoint = sampler->next2D();
+    float alpha = 1 - sqrt(1 - randomPoint.x());
+    float beta = randomPoint.y() * sqrt(1 - randomPoint.x());
+
+    SampleResult result;
+    result.p = alpha * p0 + beta * p1 + (1 - alpha - beta) * p2;
+    if (getVertexNormals().size() != 0)
+    {
+        const Normal3f n0 = m_N.col(i0), n1 = m_N.col(i1), n2 = m_N.col(i2); // 采样到的三角形的normal
+        result.n = (alpha * n0 + beta * n1 + (1 - alpha - beta) * n2).normalized();
+    }
+    else
+    {
+        Vector3f n1 = p0 - p1, n2 = p0 - p2;
+        result.n = n1.cross(n2).normalized();
+    }
+    result.probabilityDensity = m_dpdf.getNormalization(); //该mesh所有三角形面积和的倒数
+    return result;
 }
 
 std::string Intersection::toString() const {
