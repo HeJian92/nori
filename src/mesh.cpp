@@ -178,6 +178,11 @@ SampleResult Mesh::sample(Sampler *sampler)
     return result;
 }
 
+float Mesh::getTotalArea()
+{
+    return 1.0f / m_dpdf.getNormalization();
+}
+
 std::string Intersection::toString() const {
     if (!mesh)
         return "Intersection[invalid]";

@@ -22,11 +22,30 @@
 
 NORI_NAMESPACE_BEGIN
 
+struct EmitterQueryRecord
+{
+    Point3f p; // 着色点p
+    Point3f lightPos;  // 光源
+    Vector3f wi; // 着色点到光源方向
+    Normal3f n; // 法线
+    float pdf;
+
+    EmitterQueryRecord(const Point3f& lightPos)
+        : lightPos(lightPos)
+    {
+    }
+};
+
 /**
  * \brief Superclass of all emitters
  */
 class Emitter : public NoriObject {
 public:
+
+    virtual Color3f sample(Mesh* mesh, EmitterQueryRecord& eRec, Sampler* sampler) const = 0;
+    virtual Color3f eval(const EmitterQueryRecord& eRec) const = 0;
+    virtual float pdf(Mesh* mesh, const EmitterQueryRecord& eRec) const = 0;
+
 
     /**
      * \brief Return the type of object (i.e. Mesh/Emitter/etc.) 

@@ -174,6 +174,8 @@ public:
 
     SampleResult sample(Sampler* sampler);
 
+    float getTotalArea();
+
 protected:
     /// Create an empty mesh
     Mesh();
@@ -184,8 +186,11 @@ protected:
     MatrixXf      m_N;                   ///< Vertex normals
     MatrixXf      m_UV;                  ///< Vertex texture coordinates
     MatrixXu      m_F;                   ///< Faces
+
+    // BSDF和Emitter类似，都是用来计算radiance
     BSDF         *m_bsdf = nullptr;      ///< BSDF of the surface
     Emitter    *m_emitter = nullptr;     ///< Associated emitter, if any
+    
     BoundingBox3f m_bbox;                ///< Bounding box of the mesh
 
     DiscretePDF m_dpdf;
