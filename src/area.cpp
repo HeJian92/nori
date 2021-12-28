@@ -6,10 +6,10 @@
 
 NORI_NAMESPACE_BEGIN
 
-class Area : public Emitter
+class AreaLight : public Emitter
 {
 public:
-    Area(const PropertyList& propList)
+    AreaLight(const PropertyList& propList)
     {
         m_radiance = propList.getColor("radiance", Color3f(1.0f));
     }
@@ -47,7 +47,7 @@ public:
     std::string toString() const
     {
         return tfm::format(
-            "Area[\n"
+            "AreaLight[\n"
             "  radiance = %s\n"
             "]", m_radiance.toString());
     }
@@ -57,5 +57,5 @@ private:
     Color3f m_radiance;
 };
 
-NORI_REGISTER_CLASS(Area, "area");
+NORI_REGISTER_CLASS(AreaLight, "area");
 NORI_NAMESPACE_END
