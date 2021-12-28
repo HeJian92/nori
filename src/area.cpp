@@ -52,7 +52,7 @@ public:
             "]", m_radiance.toString());
     }
 
-    EClassType getClassType() const { return EBSDF; }
+    EClassType getClassType() const { return EEmitter; }
 private:
     Color3f m_radiance;
 };

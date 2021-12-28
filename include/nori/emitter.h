@@ -30,9 +30,10 @@ struct EmitterQueryRecord
     Normal3f n; // ·¨Ïß
     float pdf;
 
-    EmitterQueryRecord(const Point3f& lightPos)
-        : lightPos(lightPos)
+    EmitterQueryRecord(const Point3f& p, const Point3f& lightPos, const Normal3f& n)
+        :p(p), lightPos(lightPos), n(n)
     {
+        wi = (lightPos - p).normalized();
     }
 };
 
